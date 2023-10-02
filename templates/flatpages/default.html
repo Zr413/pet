@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+{% load custom_tags %}
+{% load i18n %}
+{% load tz %}
+{% load cache %}
+<html lang="en">
+<head>
+    {% get_hour as HOUR %}
+
+
+    {% load static %}
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>{% trans 'News-Portal' %}</title>
+    <!-- Favicon-->
+    <link rel="icon" href="{% static 'assets/favicon.ico' %}" type="image/x-icon"/>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
+
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
+</head>
+<body>
+{#{{ string }} <!-- Это уже знакомая нам переменная, просто засунули её в шаблон -->#}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+        <a class="navbar-brand mr-4" href="{% url 'news_list' %}"><i class='bx bxs-rocket bx-tada-hover'></i>
+            {% trans 'News-Portal' %}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
+                aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+                <a class="nav-item nav-link " href="{% url 'news_list' %}">{% trans 'Home' %}</a>
+                <a class="nav-item nav-link" href="#">{% trans 'About us' %}</a>
+            </div>
+            <!-- Правая часть навигационной панели -->
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" href="{% url 'news_search' %}">{% trans 'Search' %}</a>
+                {% if perms.blog.add_news %}
+                    <a class="nav-item nav-link" href="{% url 'news_create' %}">{% trans 'Create news' %}</a>
+                {% endif %}
+                {% if perms.blog.add_news %}
+                    <a class="nav-item nav-link" href="{% url 'article_create' %}">{% trans 'Create article' %}</a>
+                {% endif %}
+                {% if request.user.is_authenticated %}
+                    {% if categori_news_list %}
+                        <p class="text-capitalize"><a href="{% url 'subscriptions' new_cat.id %}"
+                                                      class="btn-secondary btn-sm">{% trans 'Subscribe' %}</a></p>
+                    {% endif %}
+                    <a class="nav-item nav-link" href="{% url 'account_logout' %}">{% trans 'Out' %}</a>
+                {% else %}
+                    <a class="nav-item nav-link" href="{% url 'account_login' %}">{% trans 'Int' %}</a>
+                {% endif %}
+                <style>
+                    body {
+                        background-color: {% if current_time.hour >= 19 or current_time.hour <= 7 %}
+                            moccasin {% else %} DarkGray {% endif %};
+                    }
+                </style>
+                <form action="{% url 'set_language' %}" method="POST"> {% csrf_token %}
+                    <!-- Не забываем по csrf_token для POST-запросов -->
+                    <input type="hidden" name="next" value="{{ redirect_to }}">
+
+                    <select name="language" id="">
+                        {% get_available_languages as LANGUAGES %} <!-- получаем языки -->
+                        {% get_language_info_list for LANGUAGES as languages %} <!-- Помещаем их в список languages -->
+
+                        {% for language in languages %}
+                            <!-- Итерируясь по списку, выводим их название на языке пользователя и код -->
+                            <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected
+                                >{% endif %} >
+                            {{ language.name_local }} - {{ language.code }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="set">
+                </form>
+
+                {% current_time as TIME_ZONE %}
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <label for="timezone">Time zone:</label>
+                    <select name="timezone">
+                        {% for tz in timezones %}
+                            <option value="{{ tz }}"{% if tz == TIME_ZONE %} selected{% endif %}>{{ tz }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="Set">
+                </form>
+
+                {{ TIME_ZONE }}
+                {{ current_time|timezone:TIME_ZONE }} <!-- Отображаем время в выбранном часовом поясе  -->
+
+                {% for model in models %}
+                    <div class="model-class">
+                        {{ model.name }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</nav>
+{#    </div>#}
+{#</nav>#}
+<body>
+<main role="main" class="container">
+    <div class="row">
+        <div class="col-md-8">
+            {% block content %}
+
+            {% endblock %}
+        </div>
+        {#        <div class="col-md-4">#}
+        {#            <div class="content-section">#}
+        {#                <h3>Разделы</h3>#}
+        {#                <p class='text-muted'>новости и события#}
+        {#                <ul class="list-group">#}
+        {#                    <li class="list-group-item list-group-item-light">Новые записи</li>#}
+        {#                    <li class="list-group-item list-group-item-light">Новости IT</li>#}
+        {#                    <li class="list-group-item list-group-item-light">...........</li>#}
+        {#                    <li class="list-group-item list-group-item-light">...........</li>#}
+        {#                </ul>#}
+        {#                </p>#}
+        {#            </div>#}
+        {#        </div>#}
+    </div>
+
+</main>
+<br>
+<!-- Футер закреплен внизу, независимо от количества постов на странице -->
+<footer class="text-center bg-dark">
+    <p><a href="{% url 'news_list' %}">© News-Portal 2022</a></p>
+</footer>
+
+<!-- Дополнительные скрипты JavaScript -->
+<!-- Сначала jQuery, затем Popper.js, последним Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+<html>
+
+

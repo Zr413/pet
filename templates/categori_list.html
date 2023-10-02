@@ -1,0 +1,52 @@
+{% extends 'flatpages/default.html' %}
+{% load i18n %}
+{% load custom_filters %}!
+<!-- Подключаем новый файл с нашим тегом -->
+
+{% load custom_tags %}
+<!-- Название у нас будет Product -->
+{% block title %}
+    {% trans 'News' %}
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+        {% if categori_news_list %}
+            <p class="text-capitalize"><a href="{% url 'subscriptions' new_cat.id %}" class="btn-secondary btn-sm">{% trans 'Subscribe' %}</a></p>
+        {% endif %}
+    <hr>
+    <ul class="list-group list-group-flush">
+        {% for category in categori_news_list %}
+            <li class="list-group-item">
+                <article class="media content-section">
+                    <div class="media-body">
+                        <div class="article-metadata">
+                            <small class="text-muted">{{ category.time|date:'d.m.Y H:i' }}</small>
+                            <small class="text-muted">({% trans 'author' %}: {{ category.author.full_name }})</small>
+                            <p>{% for cat in category.new_cat.all %}
+                                <small class="fw-bold">{% trans 'category' %}: <a
+                                        href="{% url 'categori_list' cat.id %}">{{ new_cat }}</a></small>
+                            {% endfor %}</p>
+                            <a href="{% url 'news-details' category.pk %}">{{ category.title }}</a>
+                            <p>{{ category.article|truncatechars:200 }}</p>
+
+                        </div>
+                    </div>
+                </article>
+            </li>
+        {% endfor %}
+        </table>
+    </ul>
+{% endblock content %}
+
+
+{#{% for categori_news in categori_news_list %}#}
+{#<div class="media-body">#}
+{#    <div class="article-metadata">#}
+{#        <small class="text-muted">{{ art_views.time|date:'d.m.Y H:i' }}</small>#}
+{#        <small class="text-muted">автор: {{ categori_news.author.full_name }}</small><br>#}
+{#        <small class="fw-bold">категория:#}
+{#            <p>{% for cat in categori_news.new_cat.all %}#}
+{#                <a href="{% url 'categori_list' cat.id %}">{{ new_cat }}</a>#}
+{#            {% endfor %}</p></small>#}
+{#        <a href="{% url 'news-details' categori_news.id %}">{{ categori_news.title }}</a>#}

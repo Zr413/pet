@@ -1,0 +1,56 @@
+{% extends 'flatpages/default.html' %}
+{% load i18n %}
+{% load custom_filters %}
+<!-- Подключаем новый файл с нашим тегом -->
+
+{% load custom_tags %}!
+
+{% block content %}
+    <br>
+    {##}
+    <form action="" method="get">
+        {{ filterset.form.as_p }}
+        <input type="submit" value="{% trans 'Find' %}">
+    </form>
+
+    <h1>{% trans 'Search results' %}</h1>
+    {% if articlesearch %}
+        <table>
+            {% for art in articlesearch %}
+                <article>
+                    <div>
+                        <h6>{{ art.time|date:'d.m.Y H:i' }}</h6>
+                        <h4>{{ art.title }}</h4>
+                    </div>
+                    <form action={{ art.get_absolute_url }}>
+                        <input type="submit" value="{% trans 'Read more' %}">
+                    </form>
+                    <hr>
+                </article>
+            {% empty %}
+                <p>{% trans 'No publications found for your query' %}<br>{% trans 'Try again with a different wording' %}</p>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}">1</a>
+        {% if page_obj.previous_page_number != 1 %}
+            ...
+            <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
+
+    {# Информация о текущей странице #}
+    {{ page_obj.number }}
+
+    {# Информация о следующих страницах #}
+    {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    {% endif %}
+
+{% endblock content %}

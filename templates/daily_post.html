@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{% load i18n %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans 'Title' %}</title>
+</head>
+<body>
+<h2>{% trans 'Hello! New articles in the last week' %}</h2>
+<ul>
+    {% for post in news %}
+        <li><a href="{{ link }}{{ post.get_absolute_url }}">{{ post.title }}</a></li>
+    {% endfor %}
+</ul>
+</body>
+</html>

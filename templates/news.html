@@ -1,0 +1,75 @@
+{% extends 'flatpages/default.html' %}
+{% load i18n %}
+{% load tz %}
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+    {% trans 'News' %}
+{% endblock title %}
+
+{% block content %}
+    <h1>{% trans 'News for today' %}</h1>
+
+    <!-- <h3>{{ time_now|date:'d M Y l' }}</h3> -->
+    <br>
+    <h3>{% current_time '%d.%m.%Y %A' %}</h3>
+    <h3> {{ next_sale|default_if_none:"We follow the news!" }} </h3>
+
+    <hr>
+    {% if articleviews %}
+        <ul class="list-group">
+            {% for news in articleviews %}
+                <li class="list-group-item">
+                    <article class="media content-section">
+                        <div class="media-body">
+                            <div class="article-metadata">
+                                <small class="text-muted">{{ news.time|date:'d.m.Y H:i' }}</small>
+                                <small class="text-muted">({% trans 'author' %}: {{ news.author.full_name }})</small><br>
+                                <p>{% for cat in news.new_cat.all %}
+                                    <small class="fw-bold">{% trans 'category' %}: <a
+                                            href="{% url 'categori_list' cat.id %}">{{ cat.title }}</a></small>
+                                {% endfor %}</p>
+                                <p class="article-title"><a href="{% url 'news-details' news.pk %}">{{ news.title }}</a>
+                                </p>
+                                <p class="article-content">{{ news.article|truncatechars:200|censor }}</p>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+            {% endfor %}
+
+            </table>
+        </ul>
+    {% else %}
+        <h2>{% trans 'No news!' %}</h2>
+    {% endif %}
+    {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}">1</a>
+        {% if page_obj.previous_page_number != 1 %}
+            ...
+            <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
+
+    {# Информация о текущей странице #}
+    {{ page_obj.number }}
+
+    {# Информация о следующих страницах #}
+    {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    {% endif %}
+
+{% endblock content %}
+
+
+
+
+
+
+
+

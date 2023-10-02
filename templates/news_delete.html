@@ -1,0 +1,21 @@
+{% extends 'flatpages/default.html' %}
+{% load i18n %}
+{% load tz %}
+{% load custom_filters %}
+{% load custom_tags %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">{% trans 'Deleting an article' %}</legend>
+                <h2>{% trans 'Are you sure you want to delete this entry?' %}"{{ news.title }}"</h2>
+                <p>{{ news.article|truncatewords:5 }}</p>
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-danger" type="submit">{% trans 'Yes, I want to delete' %}</button>
+                <a class="btn btn-outline-secondary" href="{% url 'news-details' news.pk %}">{% trans 'Cancel' %}</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
