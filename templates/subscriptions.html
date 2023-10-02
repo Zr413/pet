@@ -1,0 +1,76 @@
+{% extends 'flatpages/default.html' %}
+{% load i18n %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <h2>{% trans 'Subscriptions' %}</h2>
+        {% for category in categories %}
+            <div>
+                <h3>{{ category.title }}</h3>
+                {% if category.user_subscribed %}
+                    <a href="{% url 'subscriptions_action' 'unsubscribe' category.id %}"
+                       class="btn btn-primary">{% trans 'Unsubscribe' %}</a>
+                {% else %}
+                    <a href="{% url 'subscriptions_action' 'subscribe' category.id %}"
+                       class="btn btn-primary">{% trans 'Subscribe' %}</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>{% trans 'Please' %} <a
+                href="{% url 'register' %}">{% trans 'register' %}</a> {% trans 'to manage subscriptions.' %}</p>
+    {% endif %}
+
+    <!-- Всплывающие сообщения -->
+    {% if messages %}
+        <div id="message-popup" class="alert alert-dismissible fade show" role="alert" style="display: none; position: fixed; bottom: 20px; right: 20px;">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var message = "{{ messages|first }}";
+                if (message) {
+                    var popup = document.getElementById('message-popup');
+                    popup.textContent = message;
+                    popup.style.display = 'block';
+                    setTimeout(function() {
+                        popup.style.display = 'none';
+                    }, 3000);  // Сообщение исчезнет через 3 секунды
+                }
+            });
+        </script>
+    {% endif %}
+{% endblock content %}
+
+{#{% extends 'flatpages/default.html' %}#}
+{#{% load i18n %}#}
+{##}
+{#{% block content %}#}
+{#{% if messages %}#}
+{#        {% for message in messages %}#}
+{#            <div class="alert {{message.tags}} alert-dismissible fade show" role="alert">#}
+{#            {{ message }}#}
+{#            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{#    {% endif %}#}
+{#    {% if user.is_authenticated %}#}
+{#        <h2>{% trans 'Subscriptions' %}</h2>#}
+{#        {% for category in categories %}#}
+{#            <div>#}
+{#                <h3>{{ category.title }}</h3>#}
+{#                {% if category.user_subscribed %}#}
+{#                    <a href="{% url 'subscriptions_action' 'unsubscribe' category.id %}"#}
+{#                       class="btn btn-primary">{% trans 'Unsubscribe' %}</a>#}
+{#                {% else %}#}
+{#                    <a href="{% url 'subscriptions_action' 'subscribe' category.id %}"#}
+{#                       class="btn btn-primary">{% trans 'Subscribe' %}</a>#}
+{#                {% endif %}#}
+{#            </div>#}
+{#        {% endfor %}#}
+{#    {% else %}#}
+{#        <p>{% trans 'Please' %} <a#}
+{#                href="{% url 'register' %}">{% trans 'register' %}</a> {% trans 'to manage subscriptions.' %}</p>#}
+{#    {% endif %}#}
+{#{% endblock content %}#}

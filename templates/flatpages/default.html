@@ -45,11 +45,10 @@
                 {% if perms.blog.add_news %}
                     <a class="nav-item nav-link" href="{% url 'article_create' %}">{% trans 'Create article' %}</a>
                 {% endif %}
+                <a class="nav-item nav-link" href="{% url 'subscription' %}"
+                   class="btn-secondary btn-sm">{% trans 'Subscribe' %}</a>
                 {% if request.user.is_authenticated %}
-                    {% if categori_news_list %}
-                        <p class="text-capitalize"><a href="{% url 'subscriptions' new_cat.id %}"
-                                                      class="btn-secondary btn-sm">{% trans 'Subscribe' %}</a></p>
-                    {% endif %}
+                    <a class="nav-item nav-link">{% trans 'Welcome, ' %}{{ request.user.username }}</a>
                     <a class="nav-item nav-link" href="{% url 'account_logout' %}">{% trans 'Out' %}</a>
                 {% else %}
                     <a class="nav-item nav-link" href="{% url 'account_login' %}">{% trans 'Int' %}</a>

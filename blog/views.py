@@ -4,11 +4,13 @@ from datetime import datetime
 import django_filters
 import pytz  # Импортируем стандартный модуль для работы с часовыми поясами
 from celery import shared_task
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin,
                                         UserPassesTestMixin)
 from django.core.cache import cache
+from django.contrib import messages
 from django.db.models import Exists, OuterRef
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -329,8 +331,10 @@ def subscriptions(request, action=None, pk=None):
 
         if action == 'subscribe':
             Subscription.objects.get_or_create(user=request.user, category=category)
+            messages.success(request, f'Вы успешно подписались на категорию {category.title}!')
         elif action == 'unsubscribe':
             Subscription.objects.filter(user=request.user, category=category).delete()
+            messages.success(request, f'Вы успешно отписались от категории {category.title}!')
 
     categories = Categories.objects.annotate(
         user_subscribed=Exists(
@@ -342,31 +346,6 @@ def subscriptions(request, action=None, pk=None):
     ).order_by('title')
 
     return render(request, 'subscribe.html', {'categories': categories})
-
-# def subscriptions(request, action, pk):
-#     category = Categories.objects.get(id=pk)
-#
-#     if action == 'subscribe':
-#         Subscription.objects.create(user=request.user, category=category)
-#     elif action == 'unsubscribe':
-#         Subscription.objects.filter(
-#             user=request.user,
-#             category=category,
-#         ).delete()
-#
-#     categories_with_subscriptions = Categories.objects.annotate(
-#         user_subscribed=Exists(
-#             Subscription.objects.filter(
-#                 user=request.user,
-#                 category=OuterRef('pk'),
-#             )
-#         )
-#     ).order_by('name')
-#     return render(
-#         request,
-#         'subscribe.html',
-#         {'categories': categories_with_subscriptions},
-#     )
 
 
 class NewsViewset(viewsets.ModelViewSet):

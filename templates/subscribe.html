@@ -8,31 +8,14 @@
 {% block content %}
 
     {% for category in categories %}
-    <h2>{{ category.title }}</h2>
-    {% if category.user_subscribed %}
-        <a href="{% url 'subscriptions_action' 'unsubscribe' category.id %}" class="btn-secondary btn-sm">{% trans 'Unsubscribe' %}</a>
-    {% else %}
-        <a href="{% url 'subscriptions_action' 'subscribe' category.id %}" class="btn-secondary btn-sm">{% trans 'Subscribe' %}</a>
-    {% endif %}
-{% endfor %}
+        <h2>{{ category.title }}</h2>
+        {% if category.user_subscribed %}
+            {% csrf_token %}
+            <a href="{% url 'subscriptions_action' 'unsubscribe' category.id %}"
+               class="btn-secondary btn-sm">{% trans 'Unsubscribe' %}</a>
+        {% else %}
+            <a href="{% url 'subscriptions_action' 'subscribe' category.id %}"
+               class="btn-secondary btn-sm">{% trans 'Subscribe' %}</a>
+        {% endif %}
+    {% endfor %}
 {% endblock content %}
-
-{#    {% for category in categories %}#}
-{#        <p>#}
-{#            {{ category.name }}#}
-{#        <form method="post">#}
-{#            {% csrf_token %}#}
-{#            <a href="{% url 'subscriptions' 'subscribe' new_cat.id %}" class="btn-secondary btn-sm">{% trans 'Subscribe' %}</a>#}
-{#            <a href="{% url 'subscriptions' 'unsubscribe' new_cat.id %}" class="btn-secondary btn-sm">{% trans 'Unsubscribe' %}</a>#}
-{#            <input type="hidden" name="category_id" value="{{ category.id }}"/>#}
-{#            {% if category.user_subscribed %}#}
-{#                <button disabled>Подписаться</button>#}
-{#                <button name="action" value="unsubscribe">Отписаться</button>#}
-{#            {% else %}#}
-{#                <button name="action" value="subscribe">Подписаться</button>#}
-{#                <button disabled>Отписаться</button>#}
-{#            {% endif %}#}
-{#        </form>#}
-{#        </p>#}
-{#    {% endfor %}#}
-{#{% endblock content %}#}

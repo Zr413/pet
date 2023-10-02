@@ -20,6 +20,7 @@ urlpatterns = [
     # path('subscriptions/<int:pk>/', subscriptions, name='subscriptions'),
     path('subscriptions/<int:pk>/', subscriptions, name='subscriptions'),
     path('subscriptions/<str:action>/<int:pk>', subscriptions, name='subscriptions_action'),
+    path('subscriptions/', subscriptions, name='subscription'),
     # path('', set_timezone, name='set_timezone'),
 
 ]
