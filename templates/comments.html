@@ -14,9 +14,6 @@
                 <p>{{ comment.text }}</p>
             </div>
             <hr>
-            {#    <div class="comment-rating">#}
-            {#      <p>Рейтинг: {{ comment.rating }}</p>#}
-            {#    </div>#}
         </div>
     {% empty %}
         <p>Нет комментариев.</p>
@@ -33,5 +30,14 @@
     {% else %}
         <p>Только зарегистрированные пользователи могут оставлять комментарии.</p>
     {% endif %}
+
+    <!-- Кнопки для оценки статьи -->
+    {% if user.is_authenticated %}
+        <a href="{% url 'like_news' art_views.id %}">Лайк</a>
+        <a href="{% url 'dislike_news' art_views.id %}">Дизлайк</a>
+    {% else %}
+        <p>Только зарегистрированные пользователи могут оценивать статьи.</p>
+    {% endif %}
+
 
 {% endblock content %}

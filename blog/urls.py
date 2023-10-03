@@ -4,7 +4,8 @@ from .views import (NewsList, NewsDetail,
                     NewsCreate, NewsUpdate,
                     NewsDelete, NewsSearch,
                     ArticleCreate, ArticleUpdate,
-                    ArticleDelete, CategoriListView, subscriptions, CommentCreateView, CommentListView)
+                    ArticleDelete, CategoriListView, subscriptions, CommentCreateView, CommentListView, LikeView,
+                    DislikeView)
 # from django.views.decorators.cache import cache_page
 
 urlpatterns = [
@@ -37,9 +38,8 @@ urlpatterns = [
     path('subscriptions/<str:action>/<int:pk>', subscriptions, name='subscriptions_action'),
     path('subscriptions/', subscriptions, name='subscription'),
     path('article/<int:pk>/comment/', CommentCreateView.as_view(), name='add_comment'),
-
-    # path('comments/<int:pk>/like/', LikeView.as_view(), name='like_news'),
-    # path('comments/<int:pk>/dislike/', DislikeView.as_view(), name='dislike_news'),
+    path('article/<int:pk>/like/', LikeView.as_view(), name='like_news'),
+    path('article/<int:pk>/dislike/', DislikeView.as_view(), name='dislike_news'),
     # path('', set_timezone, name='set_timezone'),
 
 ]

@@ -22,6 +22,9 @@
                 {% endfor %}</p>
                 <h2 class="article-title">{{ art_views.title }}</h2>
                 <p class="article-content">{{ art_views.article|censor }}</p>
+                <div class="comment-rating">
+                    <p>Лайки: {{ art_views.rating }}</p>
+                </div>
                 <hr>
                 {% if perms.blog.change_news %}
                     <form action={% url 'news_edit' art_views.pk %}>

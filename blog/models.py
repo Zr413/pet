@@ -75,13 +75,33 @@ class News(models.Model):
         self.save()
 
     # Лайки и дизлайки новостей
-    def like(self):
-        self.rating += 1
-        self.save()
+    # def like(self, user):
+    #     user_rating, created = UserRating.objects.get_or_create(user=user, news=self, defaults={'rating': 1})
+    #     if created:
+    #         self.rating += 1
+    #         self.save()
+    #
+    # def dislike(self, user):
+    #     user_rating, created = UserRating.objects.get_or_create(user=user, news=self, defaults={'rating': -1})
+    #     if created:
+    #         self.rating -= 1
+    #         self.save()
 
-    def dislike(self):
-        self.rating -= 1
-        self.save()
+    def like(self, user):
+        user_rating, created = UserRating.objects.get_or_create(user=user, news=self)
+        if created or user_rating.rating != 1:
+            self.rating += 1
+            self.save()
+            user_rating.rating = 1
+            user_rating.save()
+
+    def dislike(self, user):
+        user_rating, created = UserRating.objects.get_or_create(user=user, news=self)
+        if created or user_rating.rating != -1:
+            self.rating -= 1
+            self.save()
+            user_rating.rating = -1
+            user_rating.save()
 
     # Превью новости
     def preview(self):
@@ -123,3 +143,12 @@ class Comment(models.Model):
 
     def get_absolute_url(self):
         return reverse('news-details', args=[str(self.news.id)])
+
+
+class UserRating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    news = models.ForeignKey(News, on_delete=models.CASCADE)
+    rating = models.IntegerField(blank=False, default=0)
+
+    class Meta:
+        unique_together = ('user', 'news')

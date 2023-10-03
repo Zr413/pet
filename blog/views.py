@@ -440,15 +440,46 @@ class CommentCreateView(CreateView):
         return reverse('news-details', args=[self.object.news_id])
 
 
+# class LikeView(View):
+#     def get(self, request, *args, **kwargs):
+#         news = get_object_or_404(News, id=self.kwargs['pk'])
+#         news.like()
+#         return HttpResponseRedirect(reverse('news-details', args=[str(news.id)]))
+#
+#
+# class DislikeView(View):
+#     def get(self, request, *args, **kwargs):
+#         news = get_object_or_404(News, id=self.kwargs['pk'])
+#         news.dislike()
+#         return HttpResponseRedirect(reverse('news-details', args=[str(news.id)]))
+
+
+# class LikeView(View):
+#     def get(self, request, *args, **kwargs):
+#         news = get_object_or_404(News, id=self.kwargs['pk'])
+#         user_like, created = UserRating.objects.get_or_create(user=request.user, news=news)
+#         if created:
+#             news.like()
+#         return HttpResponseRedirect(reverse('news-details', args=[str(news.id)]))
+#
+#
+# class DislikeView(View):
+#     def get(self, request, *args, **kwargs):
+#         news = get_object_or_404(News, id=self.kwargs['pk'])
+#         user_like, created = UserRating.objects.get_or_create(user=request.user, news=news)
+#         if created:
+#             news.dislike()
+#         return HttpResponseRedirect(reverse('news-details', args=[str(news.id)]))
+
 class LikeView(View):
     def get(self, request, *args, **kwargs):
         news = get_object_or_404(News, id=self.kwargs['pk'])
-        news.like()
+        news.like(request.user)
         return HttpResponseRedirect(reverse('news-details', args=[str(news.id)]))
 
 
 class DislikeView(View):
     def get(self, request, *args, **kwargs):
         news = get_object_or_404(News, id=self.kwargs['pk'])
-        news.dislike()
+        news.dislike(request.user)
         return HttpResponseRedirect(reverse('news-details', args=[str(news.id)]))
