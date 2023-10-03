@@ -17,6 +17,8 @@ from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import (ListView, DetailView,
                                   CreateView, UpdateView,
@@ -29,7 +31,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from .filters import NewsFilter
-from .forms import NewsForm
+from .forms import NewsForm, CommentForm
 from .models import News, Categories, Author
 
 logger = logging.getLogger(__name__)
@@ -107,7 +109,7 @@ class NewsCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user.author
-        return super().form_valid(form) and HttpResponseRedirect('/article/')
+        return super().form_valid(form) and HttpResponseRedirect('/')
 
     def create_news(request):
         form = NewsForm()
@@ -115,7 +117,7 @@ class NewsCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
             form = NewsForm(request.POST)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect('/article/')
+                return HttpResponseRedirect('/')
 
         return render(request, 'news_create.html', {'form': form})
 
@@ -405,3 +407,48 @@ class GetList(APIView):
     def get(self, request):
         ob = News.objects.all()
         return Response(ob, status=status.HTTP_200_OK)
+
+
+class CommentListView(ListView):
+    model = Comment
+    template_name = 'comments.html'
+    context_object_name = 'comment'
+    paginate_by = 10  # количество комментариев на странице
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.filterset = None
+        context['filterset'] = self.filterset
+        context['next_sale'] = None
+        return context
+
+    def get_queryset(self):
+        return Comment.objects.filter(news_id=self.kwargs['pk']).order_by('-time')
+
+
+@method_decorator(login_required, name='dispatch')
+class CommentCreateView(CreateView):
+    model = Comment
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.news_id = self.kwargs['pk']
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('news-details', args=[self.object.news_id])
+
+
+class LikeView(View):
+    def get(self, request, *args, **kwargs):
+        news = get_object_or_404(News, id=self.kwargs['pk'])
+        news.like()
+        return HttpResponseRedirect(reverse('news-details', args=[str(news.id)]))
+
+
+class DislikeView(View):
+    def get(self, request, *args, **kwargs):
+        news = get_object_or_404(News, id=self.kwargs['pk'])
+        news.dislike()
+        return HttpResponseRedirect(reverse('news-details', args=[str(news.id)]))

@@ -1,7 +1,7 @@
 from django import forms
 from django.forms.utils import ErrorList
 
-from .models import News
+from .models import News, Comment
 from django.core.exceptions import ValidationError
 
 
@@ -64,3 +64,13 @@ class NewsForm(forms.ModelForm):
                 "Статья не должна начинаться со строчной буквы"
             )
         return article
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['text'].widget.attrs.update({'class': 'textarea', 'placeholder': 'Write your comment here...'})

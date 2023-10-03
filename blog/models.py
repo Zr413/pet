@@ -120,3 +120,6 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.time.date()}, {self.user}, {self.text}, {self.rating}'
+
+    def get_absolute_url(self):
+        return reverse('news-details', args=[str(self.news.id)])

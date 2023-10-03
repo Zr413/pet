@@ -26,12 +26,22 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # path('i18n/', include('django.conf.urls.i18n')),
+    # path('admin/', admin.site.urls),
+    # path('pages/', include('django.contrib.flatpages.urls')),
+    # path('', include('blog.urls')),
+    # path('article/', include('blog.urls')),
+    # path("accounts/", include("allauth.urls")),
+    # path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    # path('api/', include(router.urls), name='api'),
+    # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('i18n/', include('django.conf.urls.i18n')),
     path('admin/', admin.site.urls),
     path('pages/', include('django.contrib.flatpages.urls')),
     path('', include('blog.urls')),
-    path('article/', include('blog.urls')),
     path("accounts/", include("allauth.urls")),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api/', include(router.urls), name='api')
+    path('api/', include(router.urls), name='api'),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    # path('comments/', include('comments.urls')),
 ]

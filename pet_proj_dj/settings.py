@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
     'fpages',
+    # 'comments',
     'django_filters',
     'allauth',
     'allauth.account',
