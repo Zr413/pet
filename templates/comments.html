@@ -1,0 +1,37 @@
+{% load i18n %}
+{% load tz %}
+{% load custom_filters %}
+{% load custom_tags %}
+{% block content %}
+    <!-- Комментарии -->
+    <h3>Комментарии:</h3>
+    {% for comment in art_views.comment_set.all %}
+        <div class="comment">
+            <div class="comment-user">
+                <small class="text-muted">({% trans 'Комментарий оставил' %}: {{ comment.user.username }})</small><br>
+            </div>
+            <div class="comment-text">
+                <p>{{ comment.text }}</p>
+            </div>
+            <hr>
+            {#    <div class="comment-rating">#}
+            {#      <p>Рейтинг: {{ comment.rating }}</p>#}
+            {#    </div>#}
+        </div>
+    {% empty %}
+        <p>Нет комментариев.</p>
+    {% endfor %}
+
+    <!-- Форма для добавления комментария -->
+    {% if user.is_authenticated %}
+        <h3>Добавить комментарий:</h3>
+        <form method="post" action="{% url 'add_comment' art_views.id %}">
+            {% csrf_token %}
+            <textarea name="text" required></textarea>
+            <button type="submit">Добавить комментарий</button>
+        </form>
+    {% else %}
+        <p>Только зарегистрированные пользователи могут оставлять комментарии.</p>
+    {% endif %}
+
+{% endblock content %}
