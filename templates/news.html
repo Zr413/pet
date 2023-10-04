@@ -3,6 +3,7 @@
 {% load tz %}
 {% load custom_filters %}
 {% load custom_tags %}
+{% load thumbnail %}
 
 {% block title %}
     {% trans 'News' %}
@@ -26,6 +27,9 @@
                             <div class="article-metadata">
                                 <small class="text-muted">{{ news.time|date:'d.m.Y H:i' }}</small>
                                 <small class="text-muted">({% trans 'author' %}: {{ news.author.full_name }})</small><br>
+                                {% if art_views.image %}
+                                    <img src="{{ art_views.image.url }}" alt="{{ art_views.title }}" class="media">
+                                {% endif %}
                                 <p>{% for cat in news.new_cat.all %}
                                     <small class="fw-bold">{% trans 'category' %}: <a
                                             href="{% url 'categori_list' cat.id %}">{{ cat.title }}</a></small>

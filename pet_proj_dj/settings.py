@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
     'fpages',
-    # 'comments',
+    'sorl.thumbnail',
     'django_filters',
     'allauth',
     'allauth.account',
@@ -172,6 +172,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = "/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+MEDIA_URL = '/images/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
+
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

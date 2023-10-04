@@ -1,10 +1,12 @@
+from django.conf.urls.static import static
 from django.urls import path
 
+from pet_proj_dj import settings
 from .views import (NewsList, NewsDetail,
                     NewsCreate, NewsUpdate,
                     NewsDelete, NewsSearch,
                     ArticleCreate, ArticleUpdate,
-                    ArticleDelete, CategoriListView, subscriptions, CommentCreateView, CommentListView, LikeView,
+                    ArticleDelete, CategoriListView, subscriptions, CommentCreateView, LikeView,
                     DislikeView)
 # from django.views.decorators.cache import cache_page
 
@@ -27,4 +29,4 @@ urlpatterns = [
     path('article/<int:pk>/dislike/', DislikeView.as_view(), name='dislike_news'),
     # path('', set_timezone, name='set_timezone'),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

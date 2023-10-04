@@ -1,9 +1,7 @@
 import logging
-from datetime import datetime
 
 import django_filters
 import pytz  # Импортируем стандартный модуль для работы с часовыми поясами
-from celery import shared_task
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import (LoginRequiredMixin,
@@ -27,12 +25,9 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
 
 from .filters import NewsFilter
 from .forms import NewsForm, CommentForm
-from .tasks import send_notifications
 
 logger = logging.getLogger(__name__)
 
@@ -109,16 +104,20 @@ class NewsCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user.author
+        form.instance.article_or_news = News.NEWS
+        if 'image' in self.request.FILES:
+            form.instance.image = self.request.FILES['image']
         return super().form_valid(form) and HttpResponseRedirect('/')
 
     def create_news(request):
         form = NewsForm()
         if request.method == 'POST':
-            form = NewsForm(request.POST)
+            form = NewsForm(request.POST, request.FILES)
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect('/')
-
+        else:
+            form = NewsForm()
         return render(request, 'news_create.html', {'form': form})
 
     def get_context_data(self, **kwargs):
@@ -221,27 +220,19 @@ class ArticleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user.author
         form.instance.article_or_news = News.ARTICLE
+        if 'image' in self.request.FILES:
+            form.instance.image = self.request.FILES['image']
         return super().form_valid(form) and HttpResponseRedirect('/')
-
-    # def form_valid(self, form):
-    #     response = super().form_valid(form)
-    #     # form.instance.author = self.request.user.author
-    #     # form.instance.article_or_news = News.ARTICLE
-    #     if self.request.method == 'POST':
-    #         article = form.save()
-    #         category = article.new_cat.all()
-    #         subscribes = Subscription.objects.filter(category__in=category).values_list('user__email', flat=True)
-    #         send_notifications.delay(article.article[:50], article.pk, article.title, list(subscribes))
-    #     return response and HttpResponseRedirect('/')
 
     def create_article(request):
         form = NewsForm()
         if request.method == 'POST':
-            form = NewsForm(request.POST)
+            form = NewsForm(request.POST, request.FILES)
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect('/article/')
-
+        else:
+            form = NewsForm()
         return render(request, 'article_create.html', {'form': form})
 
     def get_context_data(self, **kwargs):

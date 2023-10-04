@@ -57,6 +57,7 @@ class News(models.Model):
     time = models.DateTimeField(auto_now=False, auto_now_add=True)
     title = models.CharField(max_length=50)
     article = models.TextField()
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
     NEWS = 'NW'
     ARTICLE = 'AR'
     CATEGORY_CHOICES = (
@@ -75,18 +76,6 @@ class News(models.Model):
         self.save()
 
     # Лайки и дизлайки новостей
-    # def like(self, user):
-    #     user_rating, created = UserRating.objects.get_or_create(user=user, news=self, defaults={'rating': 1})
-    #     if created:
-    #         self.rating += 1
-    #         self.save()
-    #
-    # def dislike(self, user):
-    #     user_rating, created = UserRating.objects.get_or_create(user=user, news=self, defaults={'rating': -1})
-    #     if created:
-    #         self.rating -= 1
-    #         self.save()
-
     def like(self, user):
         user_rating, created = UserRating.objects.get_or_create(user=user, news=self)
         if created or user_rating.rating != 1:

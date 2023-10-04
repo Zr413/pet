@@ -76,6 +76,11 @@
   }
 }
 
+.news-image {
+    width: 100%;
+    max-width: 50px;
+}
+
 body {
   margin: 0;
   font-family: var(--bs-body-font-family);

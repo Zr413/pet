@@ -8,7 +8,9 @@ from django.core.exceptions import ValidationError
 class NewsForm(forms.ModelForm):
     class Meta:
         model = News
+        image = forms.ImageField()
         fields = [
+            'image',
             'title',
             'article',
             'new_cat',
