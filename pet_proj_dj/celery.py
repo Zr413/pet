@@ -12,7 +12,8 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'send_email_every_monday_8am': {
         'task': 'blog.tasks.send_email_every_monday',
-        'schedule': crontab(),
-        # 'args': (), hour=8, minute=0, day_of_week='monday'
+        'schedule': crontab(hour=8, minute=0, day_of_week='monday'),
     },
 }
+
+app.conf.broker_connection_retry_on_startup = True

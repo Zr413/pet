@@ -32,7 +32,7 @@ from drf_yasg import openapi
 
 from .filters import NewsFilter
 from .forms import NewsForm, CommentForm
-from .models import News, Categories, Author
+from .tasks import send_notifications
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ class NewsDetail(DetailView):
     template_name = 'new.html'
     context_object_name = 'art_views'
 
-    def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта, как ни странно
+    def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта
 
         obj = cache.get(f'product-{self.kwargs["pk"]}', None)
 
@@ -139,7 +139,9 @@ class NewsUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user.author
-        return super().form_valid(form) and HttpResponseRedirect('/article/id/')
+        form.instance.article_or_news = News.NEWS
+        return super().form_valid(form) and HttpResponseRedirect('/')
+
 
     # Проверка на авторство поста
     def test_func(self):
@@ -219,7 +221,18 @@ class ArticleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user.author
         form.instance.article_or_news = News.ARTICLE
-        return super().form_valid(form) and HttpResponseRedirect('/article/')
+        return super().form_valid(form) and HttpResponseRedirect('/')
+
+    # def form_valid(self, form):
+    #     response = super().form_valid(form)
+    #     # form.instance.author = self.request.user.author
+    #     # form.instance.article_or_news = News.ARTICLE
+    #     if self.request.method == 'POST':
+    #         article = form.save()
+    #         category = article.new_cat.all()
+    #         subscribes = Subscription.objects.filter(category__in=category).values_list('user__email', flat=True)
+    #         send_notifications.delay(article.article[:50], article.pk, article.title, list(subscribes))
+    #     return response and HttpResponseRedirect('/')
 
     def create_article(request):
         form = NewsForm()

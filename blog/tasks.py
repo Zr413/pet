@@ -1,11 +1,8 @@
 import datetime
-
 from celery import shared_task
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-
 from pet_proj_dj import settings
-
 from blog.models import Categories, News
 
 
@@ -25,35 +22,31 @@ def send_email_every_monday():
             'news': news,
         }
     )
-
     msg = EmailMultiAlternatives(
         subject='Статьи за неделю',
         body='',
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=subscribes,
     )
-
     msg.attach_alternative(html_content, 'text/html')
     msg.send()
 
 
 # Отправка уведомления подписчику, в случае добавления новости
-# @shared_task
-# def send_notifications(preview, pk, title, subscribes):
-#     html_content = render_to_string(
-#         'post_created_email.html',
-#         {
-#             'text': preview,
-#             'link': f'{settings.SITE_URL}/{pk}'
-#         }
-#     )
-#
-#     msg = EmailMultiAlternatives(
-#         subject=title,
-#         body='',
-#         from_email=settings.DEFAULT_FROM_EMAIL,
-#         to=subscribes,
-#     )
-#
-#     msg.attach_alternative(html_content, 'text/html')
-#     msg.send()
+@shared_task
+def send_notifications(preview, pk, title, subscribes):
+    html_content = render_to_string(
+        'post_created_email.html',
+        {
+            'text': preview,
+            'link': f'{settings.SITE_URL}/{pk}'
+        }
+    )
+    msg = EmailMultiAlternatives(
+        subject=title,
+        body='',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=subscribes,
+    )
+    msg.attach_alternative(html_content, 'text/html')
+    msg.send()
