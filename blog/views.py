@@ -141,7 +141,6 @@ class NewsUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         form.instance.article_or_news = News.NEWS
         return super().form_valid(form) and HttpResponseRedirect('/')
 
-
     # Проверка на авторство поста
     def test_func(self):
         post = self.get_object()
@@ -318,17 +317,6 @@ class CategoriListView(ListView):
         return redirect('/')
 
 
-# Подписка на выбранную категорию новостей
-# @login_required
-# def subscrib(request, pk):
-#     user = request.user
-#     subscribes = Categories.objects.get(id=pk)
-#     subscribes.subscribes.add(user)
-#
-#     message = 'Вы успешно подписались на категорию'
-#     return render(request, 'subscribe.html', {'categori': subscribes, 'message': message})
-
-
 @login_required
 @csrf_protect
 def subscriptions(request, action=None, pk=None):
@@ -446,7 +434,7 @@ class CommentCreateView(CreateView):
         return reverse('news-details', args=[self.object.news_id])
 
 
-# Представление для лайков
+# Представление для лайков статей
 class LikeView(View):
     def get(self, request, *args, **kwargs):
         news = get_object_or_404(News, id=self.kwargs['pk'])
