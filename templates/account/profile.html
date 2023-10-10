@@ -1,0 +1,14 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+    <h2>Редактирование профиля</h2>
+    {% if request.user.author.avatar %}
+        <img src="{{ request.user.author.avatar.url }}" alt="Аватар">
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        {{ author_form.as_p }}
+        <button type="submit">Сохранить изменения</button>
+    </form>
+{% endblock %}

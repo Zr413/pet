@@ -2,6 +2,7 @@ import logging
 
 import django_filters
 import pytz  # Импортируем стандартный модуль для работы с часовыми поясами
+from allauth.account.forms import UserForm
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import (LoginRequiredMixin,
@@ -26,6 +27,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 
+from accounts.forms import AuthorForm
 from .filters import NewsFilter
 from .forms import NewsForm, CommentForm
 
@@ -447,3 +449,16 @@ class DislikeView(View):
         news = get_object_or_404(News, id=self.kwargs['pk'])
         news.dislike(request.user)
         return HttpResponseRedirect(reverse('news-details', args=[str(news.id)]))
+
+
+class UpdateProfile(View):
+    def get(self, request):
+        author_form = AuthorForm(instance=request.user.author)
+        return render(request, 'account/profile.html', {'author_form': author_form})
+
+    def post(self, request):
+        author_form = AuthorForm(request.POST, request.FILES, instance=request.user.author)
+        if author_form.is_valid():
+            author_form.save()
+            return redirect('/')
+        return render(request, 'account/profile.html', {'author_form': author_form})

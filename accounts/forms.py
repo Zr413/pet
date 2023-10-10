@@ -67,3 +67,42 @@ class CustomSignupForm(SignupForm):
             "first_name",
             "last_name",
         )
+
+
+class AuthorForm(forms.ModelForm):
+    class Meta:
+        model = Author
+        fields = ('avatar', 'full_name', 'birth_date')
+
+    def clean_full_name(self):
+        full_name = self.cleaned_data.get('full_name')
+        if not full_name:
+            raise forms.ValidationError("Поле 'full_name' не может быть пустым")
+        names = full_name.split()
+        if len(names) < 2:
+            raise forms.ValidationError("Пожалуйста, введите ваше полное имя (имя и фамилию)")
+        return full_name
+
+    def save(self, commit=True):
+        author = super(AuthorForm, self).save(commit=False)
+        full_name = self.cleaned_data['full_name']
+        names = full_name.split()
+        author.user.first_name = names[0]
+        if len(names) > 1:
+            author.user.last_name = " ".join(names[1:])
+        author.full_name = full_name
+
+        if commit:
+            author.user.save()
+            author.save()
+
+        return author
+
+    # def save(self, commit=True):
+    #     author = super(AuthorForm, self).save(commit=False)
+    #     author.full_name = self.cleaned_data['full_name']
+    #
+    #     if commit:
+    #         author.save()
+    #
+    #     return author

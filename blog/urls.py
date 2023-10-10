@@ -7,7 +7,7 @@ from .views import (NewsList, NewsDetail,
                     NewsDelete, NewsSearch,
                     ArticleCreate, ArticleUpdate,
                     ArticleDelete, CategoriListView, subscriptions, CommentCreateView, LikeView,
-                    DislikeView)
+                    DislikeView, UpdateProfile)
 # from django.views.decorators.cache import cache_page
 
 urlpatterns = [
@@ -27,6 +27,7 @@ urlpatterns = [
     path('article/<int:pk>/comment/', CommentCreateView.as_view(), name='add_comment'),
     path('article/<int:pk>/like/', LikeView.as_view(), name='like_news'),
     path('article/<int:pk>/dislike/', DislikeView.as_view(), name='dislike_news'),
+    path('profile/', UpdateProfile.as_view(), name='update_profile'),
     # path('', set_timezone, name='set_timezone'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

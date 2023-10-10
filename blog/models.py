@@ -12,6 +12,8 @@ class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rating = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
+    avatar = models.ImageField(upload_to='images/avatars/', null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
 
     # Обновление рейтинга автора на основании лайков и дизлайков
     def update_rating(self):
