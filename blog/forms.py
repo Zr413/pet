@@ -51,6 +51,7 @@ class NewsForm(forms.ModelForm):
 
         return cleaned_data
 
+    # Добавление метода для валидации темы, проверка начала строки
     def clean_title(self):
         title = self.cleaned_data["title"]
         if title[0].islower():
@@ -59,6 +60,7 @@ class NewsForm(forms.ModelForm):
             )
         return title
 
+    # Добавление метода для валидации статьи, проверка начала строки
     def clean_article(self):
         article = self.cleaned_data["article"]
         if article[0].islower():
@@ -67,7 +69,17 @@ class NewsForm(forms.ModelForm):
             )
         return article
 
+    # Добавление метода для валидации изображения
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        if image:
+            if image.content_type not in ['image/jpeg', 'image/png']:
+                raise forms.ValidationError("Тип файла не поддерживается")
+            return image
+        raise forms.ValidationError("Не удалось прочитать файл")
 
+
+# Форма для комментариев к статье
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
