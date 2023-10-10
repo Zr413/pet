@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from allauth.account.forms import SignupForm
 from django.contrib.auth.models import Group
-from django.core.mail import send_mail, EmailMultiAlternatives, mail_admins
+from django.core.mail import EmailMultiAlternatives, mail_admins
 
 from blog.models import Author
 
@@ -69,11 +69,25 @@ class CustomSignupForm(SignupForm):
         )
 
 
+# Форма редактирования профиля
 class AuthorForm(forms.ModelForm):
+    birth_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+
     class Meta:
         model = Author
         fields = ('avatar', 'full_name', 'birth_date')
 
+    # проверка на размер изображения
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get('avatar')
+        if avatar:
+            if avatar.size > 4 * 1024 * 1024:  # max size is 4MB
+                raise forms.ValidationError("Размер изображения слишком большой ( > 4mb )")
+        return avatar
+
+    # проверка на пустое поле
     def clean_full_name(self):
         full_name = self.cleaned_data.get('full_name')
         if not full_name:
@@ -97,12 +111,3 @@ class AuthorForm(forms.ModelForm):
             author.save()
 
         return author
-
-    # def save(self, commit=True):
-    #     author = super(AuthorForm, self).save(commit=False)
-    #     author.full_name = self.cleaned_data['full_name']
-    #
-    #     if commit:
-    #         author.save()
-    #
-    #     return author
