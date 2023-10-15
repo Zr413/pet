@@ -18,7 +18,7 @@
                 <small class="text-muted">{{ art_views.time|date:'d.m.Y H:i' }}</small>
                 <small class="text-muted">({% trans 'author' %}: {{ art_views.author.full_name }})</small><br>
                 {% if art_views.image %}
-                    <img src="{{ art_views.image.url }}" alt="{{ art_views.title }}" class="media">
+                    <img src="{{ art_views.image.url }}" alt="{{ art_views.title }}" class="media" alt="Аватар" style="max-width: 300px; max-height: 300px;">
                 {% endif %}
                 <p>{% for cat in art_views.new_cat.all %}
                     <small class="fw-bold">{% trans 'category' %}: <a
